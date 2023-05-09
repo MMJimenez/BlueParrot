@@ -8,6 +8,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
 import android.widget.EditText
+import com.example.blueparrot.controller.LanguageManager
 import com.google.mlkit.common.model.DownloadConditions
 import com.google.mlkit.nl.translate.TranslateLanguage
 import com.google.mlkit.nl.translate.Translation
@@ -15,10 +16,7 @@ import com.google.mlkit.nl.translate.Translator
 import com.google.mlkit.nl.translate.TranslatorOptions
 
 class TranslateFragment : Fragment() {
-
-    final val TAG = "TranslateFragment"
-
-    lateinit var translator: Translator
+    private val TAG = "TranslateFragment"
 
     lateinit var edSource: EditText
     lateinit var edTarget: EditText
@@ -28,11 +26,7 @@ class TranslateFragment : Fragment() {
         super.onCreate(savedInstanceState)
 
         // TODO: chaged the initialization of the transalate obj. It cant be hardcoded
-        val options = TranslatorOptions.Builder()
-            .setSourceLanguage(TranslateLanguage.SPANISH)
-            .setTargetLanguage(TranslateLanguage.ENGLISH)
-            .build()
-        translator = Translation.getClient(options)
+
 
     }
 
@@ -51,9 +45,23 @@ class TranslateFragment : Fragment() {
         return view
     }
 
+    private fun createTranslator(source: String, target: String): Translator {
+        val options = TranslatorOptions.Builder()
+            .setSourceLanguage(source)
+            .setTargetLanguage(target)
+            .build()
+        return Translation.getClient(options)
+    }
+
     private fun translate() {
         if (edSource.text.toString().equals("")) return
-        if (!isAvaliableThe(translator)) return
+        val translator = createTranslator(TranslateLanguage.SPANISH, TranslateLanguage.ENGLISH) // TODO CUIDAO AQUI!
+        if (!isAvaliable(translator)) {
+            val languageManager = LanguageManager()
+            var isDownloadedSourceLanguage = languageManager.download(TranslateLanguage.SPANISH)
+            var isDownloadedTargetLanguage = languageManager.download(TranslateLanguage.ENGLISH)
+            if (!isDownloadedSourceLanguage && !isDownloadedTargetLanguage) return
+        }
         translator.translate(edSource.text.toString())
             .addOnSuccessListener { translatedText ->
                 Log.v(
@@ -65,9 +73,11 @@ class TranslateFragment : Fragment() {
             .addOnFailureListener { exception ->
                 Log.e(TAG, "Failed to translate(): $exception")
             }
+
+        translator.close() // Always closed when finish to use
     }
 
-    private fun isAvaliableThe(languageModel: Translator): Boolean {
+    private fun isAvaliable(languageModel: Translator): Boolean {
         var avaliable = false
         var conditions = DownloadConditions.Builder() // TODO: Conditions can be in another method...
             .requireWifi()
@@ -76,13 +86,13 @@ class TranslateFragment : Fragment() {
             .addOnSuccessListener {
                 // Model downloaded successfully. Okay to start translating.
                 // (Set a flag, unhide the translation UI, etc.)
-                Log.v(TAG, "Languages Downloaded")
+                Log.v(TAG, "Languages Downloaded") // TODO toast Required or dialog to confirm the download
                 avaliable = true
             }
             .addOnFailureListener { exception ->
                 // Model couldn’t be downloaded or other internal error.
                 // ...
-                Log.e(TAG, "Languages not donwloaded: $exception")
+                Log.e(TAG, "Languages not donwloaded: $exception") // TODO toast Required or dialog to confirm the download
                 avaliable = false
             }
         Log.v(TAG, "is avaliable the language model?: $avaliable")
