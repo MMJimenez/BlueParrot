@@ -8,7 +8,8 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
 import android.widget.EditText
-import com.example.blueparrot.controller.LanguageManager
+import com.example.blueparrot.controllers.LanguageManager
+import com.example.blueparrot.services.SpeechActivationService
 import com.google.mlkit.common.model.DownloadConditions
 import com.google.mlkit.nl.translate.TranslateLanguage
 import com.google.mlkit.nl.translate.Translation
@@ -40,7 +41,10 @@ class TranslateFragment : Fragment() {
         edTarget = view.findViewById(R.id.ed_result)
         btnTranslate = view.findViewById(R.id.btn_translate)
 
-        btnTranslate.setOnClickListener { translate() }
+        btnTranslate.setOnClickListener {
+//            translate()
+            startSpeechActivator()
+        }
 
         return view
     }
@@ -97,5 +101,10 @@ class TranslateFragment : Fragment() {
             }
         Log.v(TAG, "is avaliable the language model?: $avaliable")
         return avaliable
+    }
+
+    fun startSpeechActivator() {
+        val i = SpeechActivationService.makeStartServiceIntent(context)
+        context!!.startService(i)
     }
 }

@@ -1,4 +1,4 @@
-package com.example.blueparrot.controller
+package com.example.blueparrot.controllers
 
 import android.util.Log
 import com.google.mlkit.common.model.DownloadConditions
