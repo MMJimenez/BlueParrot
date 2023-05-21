@@ -261,7 +261,16 @@ class SpeechActivationService : Service(),
     }
 
     override fun onResult(heard: List<String>) {
-        val phrase = heard.toString()
+        var phrase = ""
+        for (words in heard) {
+            phrase += words
+        }
+        sendTextToFragment(phrase)
+    }
+
+    private fun sendTextToFragment(text: String) {
+        val intent1 = Intent("my_service_action").putExtra("RECOGNIZE_SPEECH", text)
+        sendBroadcast(intent1)
     }
 
     override fun onBind(intent: Intent): IBinder? {

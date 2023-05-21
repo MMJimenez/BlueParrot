@@ -1,36 +1,64 @@
 package com.example.blueparrot
 
 import android.Manifest
-import android.content.BroadcastReceiver
+import android.content.*
 import android.os.Build
 import android.os.Bundle
+import android.speech.tts.TextToSpeech
+import android.text.TextUtils
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
 import android.widget.EditText
+import android.widget.Toast
 import androidx.core.content.PermissionChecker
 import androidx.core.content.PermissionChecker.checkCallingOrSelfPermission
 import androidx.fragment.app.Fragment
 import com.example.blueparrot.controllers.LanguageManager
 import com.example.blueparrot.services.SpeechActivationService
+import com.google.android.gms.tasks.Task
 import com.google.mlkit.common.model.DownloadConditions
 import com.google.mlkit.nl.translate.TranslateLanguage
 import com.google.mlkit.nl.translate.Translation
 import com.google.mlkit.nl.translate.Translator
 import com.google.mlkit.nl.translate.TranslatorOptions
+import java.util.HashMap
 
-class TranslateFragment : Fragment() {
+class TranslateFragment : Fragment(), TextToSpeech.OnInitListener {
     private val TAG = "TranslateFragment"
 
-    lateinit var edSource: EditText
-    lateinit var edTarget: EditText
-    lateinit var btnTranslate: Button
+    private lateinit var edSource: EditText
+    private lateinit var edTarget: EditText
+    private lateinit var btnTranslate: Button
+    private lateinit var btnRecognize: Button
+
+    private var tts: TextToSpeech? = null
+    var ttsEngine: HashMap<String, String>? = null
+
+    private val serviceBroadcastReceiver = object : BroadcastReceiver() {
+        override fun onReceive(context: Context, intent: Intent) {
+            val number = intent.getIntExtra("Number_key", 0)
+            val text = intent.getStringExtra("RECOGNIZE_SPEECH")
+            if (text != null) {
+                translateRecognition(text, edSource, edTarget)
+            }
+            Log.d("MyService", "onReceive text = $text")
+        }
+    }
+
+    override fun onInit(status: Int) {
+        TODO("Not yet implemented")
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        // TODO: chaged the initialization of the transalate obj. It cant be hardcoded
+        // register the receiver
+        val intentFilter = IntentFilter("my_service_action")
+        requireActivity().registerReceiver(serviceBroadcastReceiver, intentFilter)
+
+        tts = TextToSpeech(context, this)
     }
 
     override fun onCreateView(
@@ -42,16 +70,24 @@ class TranslateFragment : Fragment() {
         edSource = view.findViewById(R.id.ed_source)
         edTarget = view.findViewById(R.id.ed_result)
         btnTranslate = view.findViewById(R.id.btn_translate)
+        btnRecognize = view.findViewById(R.id.btn_recognize)
 
         btnTranslate.setOnClickListener {
-//            translate()
-            Log.v(TAG, "Pulsado btnTranslate")
+            translateText(edSource, edTarget)
+        }
+
+        btnRecognize.setOnClickListener {
             startSpeechActivator()
         }
 
         requestRecordAudioPermission()
 
         return view
+    }
+
+    override fun onDestroy() {
+        requireActivity().unregisterReceiver(serviceBroadcastReceiver)
+        super.onDestroy()
     }
 
     private fun requestRecordAudioPermission() {
@@ -75,28 +111,48 @@ class TranslateFragment : Fragment() {
         return Translation.getClient(options)
     }
 
-    private fun translate() {
-        if (edSource.text.toString().equals("")) return
-        val translator = createTranslator(TranslateLanguage.SPANISH, TranslateLanguage.ENGLISH) // TODO CUIDAO AQUI!
-        if (!isAvaliable(translator)) {
-            val languageManager = LanguageManager()
-            var isDownloadedSourceLanguage = languageManager.download(TranslateLanguage.SPANISH)
-            var isDownloadedTargetLanguage = languageManager.download(TranslateLanguage.ENGLISH)
-            if (!isDownloadedSourceLanguage && !isDownloadedTargetLanguage) return
+    private fun translateText(sourceView: EditText, targetView: EditText) {
+        if (TextUtils.isEmpty(sourceView.text.toString())) {
+            Toast.makeText(context, "Ed Origin cant be empty", Toast.LENGTH_SHORT).show()
+            return
         }
-        translator.translate(edSource.text.toString())
-            .addOnSuccessListener { translatedText ->
-                Log.v(
-                    TAG,
-                    "Texto Source: " + edSource.text.toString() + "Texto Target: " + translatedText
-                )
-                edTarget.setText(translatedText)
+
+        var translationOptions = TranslatorOptions.Builder()
+            .setSourceLanguage(TranslateLanguage.SPANISH)
+            .setTargetLanguage(TranslateLanguage.ENGLISH)
+            .build()
+        var translator = Translation.getClient(translationOptions)
+
+
+
+        var sourceText = sourceView.text.toString()
+
+//        var progressDialog = ProgressDialog(context)
+//        progressDialog.setMessage("Downloading the translation model...")
+//        progressDialog.setCancelable(false)
+//        progressDialog.show()
+
+        translator.downloadModelIfNeeded()
+            .addOnSuccessListener {
+                // progressDialog.dismiss()
             }
-            .addOnFailureListener { exception ->
-                Log.e(TAG, "Failed to translate(): $exception")
+            .addOnFailureListener {
+                Log.e(ContentValues.TAG, "ex.toString()")
             }
 
-        translator.close() // Always closed when finish to use
+        Log.v(ContentValues.TAG, "Continuando...")
+        var result: Task<String> = translator.translate(sourceText)
+            .addOnSuccessListener {
+                targetView.setText(it)
+            }
+            .addOnFailureListener {
+                Log.e(ContentValues.TAG, "ex.toString()")
+            }
+    }
+
+    private fun translateRecognition(heardText: String, sourceView: EditText, targetView: EditText) {
+        sourceView.setText(heardText)
+        translateText(sourceView, targetView)
     }
 
     private fun isAvaliable(languageModel: Translator): Boolean {

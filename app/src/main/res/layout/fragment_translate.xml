@@ -27,6 +27,7 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:gravity="center"
+            android:orientation="horizontal"
             android:layout_weight="1">
 
             <Button
@@ -36,13 +37,21 @@
                 android:text="tradudir"
                 />
 
+            <Button
+                android:layout_marginLeft="10dp"
+                android:id="@+id/btn_recognize"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Microfono"
+                />
+
         </LinearLayout>
 
         <LinearLayout
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:gravity="center"
-            android:layout_weight="1">
+            android:layout_weight="0.5">
 
             <CheckBox
                 android:layout_width="wrap_content"
