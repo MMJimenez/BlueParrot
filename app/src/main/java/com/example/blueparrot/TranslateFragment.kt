@@ -1,7 +1,7 @@
 package com.example.blueparrot
 
 import android.Manifest
-import android.content.pm.PackageManager
+import android.content.BroadcastReceiver
 import android.os.Build
 import android.os.Bundle
 import android.util.Log
@@ -21,7 +21,6 @@ import com.google.mlkit.nl.translate.Translation
 import com.google.mlkit.nl.translate.Translator
 import com.google.mlkit.nl.translate.TranslatorOptions
 
-
 class TranslateFragment : Fragment() {
     private val TAG = "TranslateFragment"
 
@@ -31,10 +30,7 @@ class TranslateFragment : Fragment() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
         // TODO: chaged the initialization of the transalate obj. It cant be hardcoded
-
-
     }
 
     override fun onCreateView(

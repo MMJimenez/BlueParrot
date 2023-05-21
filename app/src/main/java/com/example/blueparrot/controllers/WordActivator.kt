@@ -59,26 +59,24 @@ class WordActivator(
 
     override fun onResults(results: Bundle) {
         Log.d(TAG, "full results")
-        receiveResults(results, true)
+        receiveResults(results)
     }
 
-    override fun onPartialResults(partialResults: Bundle) {
-        Log.d(TAG, "partial results")
-        receiveResults(partialResults, false)
+    override fun onPartialResults(partialResults: Bundle?) {
+        // not used
     }
 
     /**
      * common method to process any results bundle from [SpeechRecognizer]
      */
-    private fun receiveResults(results: Bundle?, onlyFullResults: Boolean) {
+    private fun receiveResults(results: Bundle?) {
         if (results != null
             && results.containsKey(SpeechRecognizer.RESULTS_RECOGNITION)
         ) {
             val heard: List<String>? =
                 results.getStringArrayList(SpeechRecognizer.RESULTS_RECOGNITION)
             val scores = results.getFloatArray(SpeechRecognizer.CONFIDENCE_SCORES)
-
-            if (onlyFullResults) receiveWhatWasHeard(heard, scores)
+            receiveWhatWasHeard(heard, scores)
         } else {
             Log.d(TAG, "no results")
         }
@@ -87,15 +85,13 @@ class WordActivator(
     private fun receiveWhatWasHeard(heard: List<String>?, scores: FloatArray?) {
         val heardTargetWord = false
         // find the target word
-        Log.i(TAG, "Listening... " + heard.toString())
+        Log.i(TAG, "Listened " + heard.toString())
 
-        if (heard != null && !heard.isEmpty()) {
-            if (heard.contains("hola")) {
-                stop()
-                resultListener.activated(true)
-            }
+        if (heard != null) {
+            stop()
+            resultListener.onResult(heard)
+            resultListener.activated(true)
         }
-        recognizeSpeechDirectly()
     }
 
 

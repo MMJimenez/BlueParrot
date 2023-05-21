@@ -260,6 +260,10 @@ class SpeechActivationService : Service(),
         return channelID
     }
 
+    override fun onResult(heard: List<String>) {
+        val phrase = heard.toString()
+    }
+
     override fun onBind(intent: Intent): IBinder? {
         return null
     }
