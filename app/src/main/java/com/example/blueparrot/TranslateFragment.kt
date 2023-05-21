@@ -1,13 +1,18 @@
 package com.example.blueparrot
 
+import android.Manifest
+import android.content.pm.PackageManager
+import android.os.Build
 import android.os.Bundle
 import android.util.Log
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
 import android.widget.EditText
+import androidx.core.content.PermissionChecker
+import androidx.core.content.PermissionChecker.checkCallingOrSelfPermission
+import androidx.fragment.app.Fragment
 import com.example.blueparrot.controllers.LanguageManager
 import com.example.blueparrot.services.SpeechActivationService
 import com.google.mlkit.common.model.DownloadConditions
@@ -15,6 +20,7 @@ import com.google.mlkit.nl.translate.TranslateLanguage
 import com.google.mlkit.nl.translate.Translation
 import com.google.mlkit.nl.translate.Translator
 import com.google.mlkit.nl.translate.TranslatorOptions
+
 
 class TranslateFragment : Fragment() {
     private val TAG = "TranslateFragment"
@@ -43,11 +49,27 @@ class TranslateFragment : Fragment() {
 
         btnTranslate.setOnClickListener {
 //            translate()
+            Log.v(TAG, "Pulsado btnTranslate")
             startSpeechActivator()
         }
 
+        requestRecordAudioPermission()
+
         return view
     }
+
+    private fun requestRecordAudioPermission() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            val requiredPermission: String = Manifest.permission.RECORD_AUDIO
+
+            // If the user previously denied this permission then show a message explaining why
+            // this permission is needed
+            if (checkCallingOrSelfPermission(requireContext(), requiredPermission) == PermissionChecker.PERMISSION_DENIED) {
+                requestPermissions(arrayOf(requiredPermission), 101)
+            }
+        }
+    }
+
 
     private fun createTranslator(source: String, target: String): Translator {
         val options = TranslatorOptions.Builder()
@@ -105,6 +127,6 @@ class TranslateFragment : Fragment() {
 
     fun startSpeechActivator() {
         val i = SpeechActivationService.makeStartServiceIntent(context)
-        context!!.startService(i)
+        requireContext().startService(i)
     }
 }

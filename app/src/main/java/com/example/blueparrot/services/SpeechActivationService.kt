@@ -1,5 +1,6 @@
 package com.example.blueparrot.services
 
+import android.annotation.SuppressLint
 import android.app.*
 import android.app.PendingIntent.FLAG_IMMUTABLE
 import android.content.Context
@@ -220,6 +221,7 @@ class SpeechActivationService : Service(),
         }
     }
 
+    @SuppressLint("LaunchActivityFromNotification")
     private fun getNotification(intent: Intent?): Notification {
         val name = "Di el número y \"ordinarias\" o \"parar\""
         val title = "Reconocimiento Voz Activo"
@@ -228,12 +230,8 @@ class SpeechActivationService : Service(),
             channelIDBuildVersion =
                 createNotificationChannel("my_service", "My Background Service")
         }
-        val pi = PendingIntent.getService(
-            this,
-            0,
-            makeServiceStopIntent(this),
-            FLAG_IMMUTABLE
-        )
+        val pi = PendingIntent.getService(this, 0,
+            makeServiceStopIntent(this), FLAG_IMMUTABLE)
         return NotificationCompat.Builder(
             this,
             channelIDBuildVersion

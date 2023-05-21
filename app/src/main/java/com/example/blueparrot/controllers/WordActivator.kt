@@ -25,6 +25,8 @@ class WordActivator(
     SpeechActivator, RecognitionListener {
     private var recognizer: SpeechRecognizer? = null
 
+    private val TAG = "WordActivator"
+
     override fun detectActivation() {
         recognizeSpeechDirectly()
     }
@@ -57,25 +59,26 @@ class WordActivator(
 
     override fun onResults(results: Bundle) {
         Log.d(TAG, "full results")
-        receiveResults(results)
+        receiveResults(results, true)
     }
 
     override fun onPartialResults(partialResults: Bundle) {
         Log.d(TAG, "partial results")
-        receiveResults(partialResults)
+        receiveResults(partialResults, false)
     }
 
     /**
      * common method to process any results bundle from [SpeechRecognizer]
      */
-    private fun receiveResults(results: Bundle?) {
+    private fun receiveResults(results: Bundle?, onlyFullResults: Boolean) {
         if (results != null
             && results.containsKey(SpeechRecognizer.RESULTS_RECOGNITION)
         ) {
             val heard: List<String>? =
                 results.getStringArrayList(SpeechRecognizer.RESULTS_RECOGNITION)
             val scores = results.getFloatArray(SpeechRecognizer.CONFIDENCE_SCORES)
-            receiveWhatWasHeard(heard, scores)
+
+            if (onlyFullResults) receiveWhatWasHeard(heard, scores)
         } else {
             Log.d(TAG, "no results")
         }
@@ -86,7 +89,13 @@ class WordActivator(
         // find the target word
         Log.i(TAG, "Listening... " + heard.toString())
 
-
+        if (heard != null && !heard.isEmpty()) {
+            if (heard.contains("hola")) {
+                stop()
+                resultListener.activated(true)
+            }
+        }
+        recognizeSpeechDirectly()
     }
 
 
@@ -98,7 +107,7 @@ class WordActivator(
             // keep going
             recognizeSpeechDirectly()
         } else {
-            Log.d(TAG, "FAILED ")
+            Log.d(TAG, "FAILED errorCode: $errorCode")
         }
     }
 
