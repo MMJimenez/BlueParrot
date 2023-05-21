@@ -23,41 +23,15 @@ import java.util.*
 
 
 class SpeechActivationService : Service(),
-    SpeechActivationListener, OnInitListener {
+    SpeechActivationListener {
     private var isStarted = false
     private var activator: SpeechActivator? = null
     private var startIntent: Intent? = null
-    private var tts: TextToSpeech? = null
-    private var isInit = false
     private var handler: Handler? = null
-    var ttsEngine: HashMap<String, String>? = null
     override fun onCreate() {
         super.onCreate()
         isStarted = false
-        tts = TextToSpeech(applicationContext, this)
         handler = Handler()
-    }
-
-    override fun onInit(status: Int) {
-        if (status == TextToSpeech.SUCCESS) {
-            val result = tts!!.setLanguage(Locale("es", "ES"))
-            if (result != TextToSpeech.LANG_MISSING_DATA && result != TextToSpeech.LANG_NOT_SUPPORTED) {
-                ttsEngine = HashMap()
-                ttsEngine!![TextToSpeech.Engine.KEY_PARAM_UTTERANCE_ID] = UTTERANCE_ID
-                tts!!.setOnUtteranceProgressListener(object : UtteranceProgressListener() {
-                    override fun onStart(utteranceId: String) {}
-                    override fun onDone(utteranceId: String) {
-                        if (utteranceId == UTTERANCE_ID) {
-                            Log.d(TAG, "entra en onDone")
-                            startDetecting(startIntent, true)
-                        }
-                    }
-
-                    override fun onError(utteranceId: String) {}
-                })
-                isInit = true
-            }
-        }
     }
 
     /**
@@ -120,22 +94,7 @@ class SpeechActivationService : Service(),
     }
 
     private val requestedActivator: SpeechActivator
-        private get() = WordActivator(this, this, "hello")
-
-    /**
-     * determine if the intent contains an activator type
-     * that is different than the currently running type
-     */
-//    private fun isDifferentType(intent: Intent): Boolean {
-//        var different = false
-//        different = if (activator == null) {
-//            return true
-//        } else {
-//            val possibleOther: SpeechActivator = requestedActivator
-//            !possibleOther.getClass().getName().equals(activator.getClass().getName())
-//        }
-//        return different
-//    }
+        private get() = WordActivator(this, this)
 
     private fun isDifferentType(intent: Intent): Boolean {
         var different = false
@@ -146,13 +105,6 @@ class SpeechActivationService : Service(),
             different = possibleOther.javaClass.name != activator!!.javaClass.name
         }
         return different
-    }
-
-    private fun speak(word: String, withConfirmation: Boolean = false) {
-        val speakConfirmationParam = if (withConfirmation) ttsEngine else null
-        if (tts != null && isInit) {
-            tts!!.speak(word, TextToSpeech.QUEUE_FLUSH, speakConfirmationParam)
-        }
     }
 
     override fun activated(success: Boolean) {
@@ -166,44 +118,6 @@ class SpeechActivationService : Service(),
 
         // always stop after receive an activation
         stopSelf()
-    }
-
-    fun activatedAndTtsConfirmation(text: String) {
-        // make sure the activator is stopped before doing anything else
-        stopActivator()
-        if (isInit) {
-            speak(text, true)
-        }
-
-        // broadcast result
-        val intent = Intent(ACTIVATION_RESULT_BROADCAST_NAME)
-        intent.putExtra(ACTIVATION_RESULT_INTENT_KEY, true)
-        sendBroadcast(intent)
-        stopActivator()
-
-//        if (startIntent != null) {
-//            handler.postDelayed(new Runnable() {
-//
-//                @Override
-//                public void run() {
-//                    startDetecting(startIntent);
-//                }
-//            }, 3 * 1000);
-//
-//        }
-    }
-
-    fun activatedAndTts(text: String) {
-        // make sure the activator is stopped before doing anything else
-        stopActivator()
-        if (isInit) {
-            speak(text)
-        }
-
-        // broadcast result
-        val intent = Intent(ACTIVATION_RESULT_BROADCAST_NAME)
-        intent.putExtra(ACTIVATION_RESULT_INTENT_KEY, true)
-        sendBroadcast(intent)
     }
 
     override fun onDestroy() {
@@ -223,8 +137,8 @@ class SpeechActivationService : Service(),
 
     @SuppressLint("LaunchActivityFromNotification")
     private fun getNotification(intent: Intent?): Notification {
-        val name = "Di el número y \"ordinarias\" o \"parar\""
-        val title = "Reconocimiento Voz Activo"
+        val name = "Nombre notif"
+        val title = "titulo notif"
         var channelIDBuildVersion = ""
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             channelIDBuildVersion =

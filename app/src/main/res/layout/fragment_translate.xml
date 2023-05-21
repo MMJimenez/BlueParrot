@@ -7,6 +7,34 @@
     tools:context=".TranslateFragment">
 
     <!-- TODO: Update blank fragment layout -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        >
+
+        <EditText
+            android:id="@+id/ed_source_language"
+            android:layout_width="0dp"
+            android:layout_weight="0.5"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="20dp"
+            android:textSize="20sp"
+            android:text="SPANISH"
+
+            />
+        <EditText
+            android:id="@+id/ed_target_language"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="0.5"
+            android:layout_marginHorizontal="20dp"
+            android:textSize="20sp"
+            android:text="ENGLISH"
+
+            />
+
+    </LinearLayout>
     <EditText
         android:id="@+id/ed_source"
         android:layout_width="match_parent"
@@ -37,12 +65,13 @@
                 android:text="tradudir"
                 />
 
-            <Button
+            <ImageButton
                 android:layout_marginLeft="10dp"
                 android:id="@+id/btn_recognize"
-                android:layout_width="wrap_content"
+                android:layout_width="50dp"
                 android:layout_height="wrap_content"
-                android:text="Microfono"
+                android:src="@drawable/ic_conversacion_24"
+                android:backgroundTint="@color/purple_500"
                 />
 
         </LinearLayout>
@@ -54,8 +83,10 @@
             android:layout_weight="0.5">
 
             <CheckBox
+                android:id="@+id/auto"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:checked="true"
                 android:text="Auto"/>
 
         </LinearLayout>

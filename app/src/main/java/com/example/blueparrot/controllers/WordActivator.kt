@@ -20,7 +20,7 @@ import java.util.*
  */
 class WordActivator(
     private val context: Context,
-    private val resultListener: SpeechActivationListener, vararg targetWords: String?
+    private val resultListener: SpeechActivationListener
 ) :
     SpeechActivator, RecognitionListener {
     private var recognizer: SpeechRecognizer? = null
@@ -35,7 +35,7 @@ class WordActivator(
         val recognizerIntent = Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH)
         recognizerIntent.putExtra(
             RecognizerIntent.EXTRA_LANGUAGE_MODEL,
-            RecognizerIntent.LANGUAGE_MODEL_WEB_SEARCH
+            RecognizerIntent.LANGUAGE_MODEL_FREE_FORM
         )
         // accept partial results if they come
         recognizerIntent.putExtra(RecognizerIntent.EXTRA_PARTIAL_RESULTS, true)
