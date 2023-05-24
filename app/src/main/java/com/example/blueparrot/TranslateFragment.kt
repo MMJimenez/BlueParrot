@@ -11,22 +11,18 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Button
-import android.widget.CheckBox
-import android.widget.EditText
-import android.widget.ImageButton
-import android.widget.Toast
+import android.widget.*
 import androidx.core.content.PermissionChecker
 import androidx.core.content.PermissionChecker.checkCallingOrSelfPermission
 import androidx.fragment.app.Fragment
 import com.example.blueparrot.services.SpeechActivationService
 import com.google.android.gms.tasks.Task
 import com.google.mlkit.common.model.DownloadConditions
-import com.google.mlkit.nl.translate.TranslateLanguage
 import com.google.mlkit.nl.translate.Translation
 import com.google.mlkit.nl.translate.Translator
 import com.google.mlkit.nl.translate.TranslatorOptions
 import java.util.*
+
 
 class TranslateFragment : Fragment(), TextToSpeech.OnInitListener {
     private val TAG = "TranslateFragment"
@@ -136,6 +132,15 @@ class TranslateFragment : Fragment(), TextToSpeech.OnInitListener {
         }
 
         requestRecordAudioPermission()
+
+        val elementos =
+            arrayOf("Elemento 1", "Elemento 2", "Elemento 3", "Elemento 4", "Elemento 5")
+
+        val adapter: ArrayAdapter<String> =
+            ArrayAdapter<String>(requireContext(), android.R.layout.simple_dropdown_item_1line, elementos)
+
+        val autoCompleteTextView: AutoCompleteTextView = view.findViewById(R.id.ed_source_language)
+        autoCompleteTextView.setAdapter(adapter)
 
         return view
     }
