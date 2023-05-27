@@ -33,10 +33,11 @@ class TranslateFragment : Fragment(), TextToSpeech.OnInitListener {
     private lateinit var btnRecognize: ImageButton
     private lateinit var cbConversation: CheckBox
 
-    private var sourceLocale = Locale("es", "ES")
-    private var targetLocale = Locale.ENGLISH
+    private var sourceLocale = Locale("es", "ES") // TODO no hardcode
+    private var targetLocale = Locale.ENGLISH // TODO no hardcode
 
-    private var sourceLanguage = "SPANISH"
+    // This variables are the Strings of the Locales
+    private var sourceLanguage = "SPANISH" // TODO no hardcode,
     private var targetLanguage = "ENGLISH"
 
     private var tts: TextToSpeech? = null
@@ -57,6 +58,7 @@ class TranslateFragment : Fragment(), TextToSpeech.OnInitListener {
 
     override fun onInit(status: Int) {
         if (status == TextToSpeech.SUCCESS) {
+            // Set language
             val result = tts!!.setLanguage(targetLocale)
             if (result != TextToSpeech.LANG_MISSING_DATA && result != TextToSpeech.LANG_NOT_SUPPORTED) {
                 ttsEngine = HashMap()
@@ -167,17 +169,28 @@ class TranslateFragment : Fragment(), TextToSpeech.OnInitListener {
         sourceLocale = targetLocale
         targetLocale = tempLanguage
 
-        sourceLanguage = localeToLanguageModel(sourceLocale)
-        targetLanguage = localeToLanguageModel(targetLocale)
+        sourceLanguage = localeToLanguageModel(sourceLocale)!! // TODO No dejar estos unwrappers
+        targetLanguage = localeToLanguageModel(targetLocale)!! // TODO No dejar estos unwrappers
     }
 
-    private fun localeToLanguageModel(locale: Locale): String {
-        val language = locale.language
-        when(language) {
-            "es" -> return "SPANISH"
-            "en" -> return "ENGLISH"
+    private fun localeToLanguageModel(locale: Locale): String? {
+        when(locale.language) {
+            Locale("es", "ES").language -> return R.string.spanish.toString()
+            Locale.ENGLISH.language -> return R.string.english.toString()
+            Locale.FRANCE.language -> return R.string.french.toString()
+            Locale.GERMAN.language -> return R.string.german.toString()
         }
-        return "ENGLISH"
+        return null
+    }
+
+    private fun stringLanguageToLocale(language: String): Locale? {
+        when(language) {
+            R.string.spanish.toString() -> return Locale("es", "ES")
+            R.string.english.toString() -> return Locale.ENGLISH
+            R.string.french.toString() -> return Locale.FRANCE
+            R.string.german.toString() -> return Locale.GERMAN
+        }
+        return null
     }
 
 
