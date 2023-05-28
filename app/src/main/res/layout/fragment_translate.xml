@@ -6,100 +6,103 @@
     android:orientation="vertical"
     tools:context=".TranslateFragment">
 
-    <!-- TODO: Update blank fragment layout -->
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="?actionBarSize"
         android:orientation="horizontal"
+        android:background="?colorPrimary"
         >
 
         <AutoCompleteTextView
+            android:layout_marginHorizontal="10dp"
             android:id="@+id/ed_source_language"
             android:layout_width="0dp"
-            android:layout_weight="0.5"
-            android:layout_height="wrap_content"
-            android:layout_marginHorizontal="20dp"
-            android:textSize="20sp"
-            android:text="SPANISH"
-
+            android:layout_height="match_parent"
+            android:layout_weight="4"
+            android:textColor="@color/white"
             />
-        <EditText
+
+        <ImageButton
+            android:id="@+id/btn_switch_languages"
+            android:src="@drawable/ic_switch_lang_"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:background="@null"
+            />
+
+        <AutoCompleteTextView
+            android:layout_marginHorizontal="10dp"
             android:id="@+id/ed_target_language"
             android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="0.5"
-            android:layout_marginHorizontal="20dp"
-            android:textSize="20sp"
-            android:text="ENGLISH"
-
+            android:layout_height="match_parent"
+            android:layout_weight="4"
+            android:textColor="@color/white"
             />
-
     </LinearLayout>
+
     <EditText
         android:id="@+id/ed_source"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginHorizontal="20dp"
-        android:textSize="20sp"
-        android:text="Esta es una prueba de texto"
-        android:hint="Source text"
+        android:layout_height="0dp"
+        android:layout_weight="0.5"
+        android:hint="source"
+        android:gravity="top"
         />
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="?actionBarSize"
         android:orientation="horizontal"
+        android:background="?colorOnPrimary"
+        android:gravity="center_vertical"
         >
 
-        <LinearLayout
-            android:layout_width="0dp"
+        <Button
+            android:id="@+id/btn_translate"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:gravity="center"
-            android:orientation="horizontal"
-            android:layout_weight="1">
+            android:text="@string/btn_translate"
+            android:layout_marginHorizontal="20dp"
+            android:textColor="@color/white"
+            />
 
-            <Button
-                android:id="@+id/btn_translate"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="tradudir"
-                />
+        <ImageButton
+            android:id="@+id/btn_recognize"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/ic_mic_on"
+            android:background="@null"
+            />
+
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            >
 
             <ImageButton
-                android:layout_marginLeft="10dp"
-                android:id="@+id/btn_recognize"
-                android:layout_width="50dp"
-                android:layout_height="wrap_content"
-                android:src="@drawable/ic_conversacion_24"
-                android:backgroundTint="@color/purple_500"
-                />
-
-        </LinearLayout>
-
-        <LinearLayout
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:gravity="center"
-            android:layout_weight="0.5">
-
-            <CheckBox
-                android:id="@+id/auto"
+                android:id="@+id/btn_conversation"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:checked="true"
-                android:text="Auto"/>
+                android:src="@drawable/ic_conversation_white_"
+                android:background="@null"
+                android:layout_alignParentRight="true"
+                android:layout_centerVertical="true"
+                android:layout_marginRight="20dp"
+                />
 
-        </LinearLayout>
+        </RelativeLayout>
 
     </LinearLayout>
 
     <EditText
         android:id="@+id/ed_result"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginHorizontal="20dp"
-
-        android:hint="Result Text"
-        android:textSize="20sp"/>
+        android:layout_height="0dp"
+        android:layout_weight="0.5"
+        android:hint="target"
+        android:gravity="top"
+        />
 
 </LinearLayout>

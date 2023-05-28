@@ -9,4 +9,6 @@
     <string name="french">French</string>
     <string name="german">German</string>
     <string name="russian">Russian</string>
+    <string name="btn_translate">Traducir</string>
+    <string name="cb_conversation">Conversar</string>
 </resources>

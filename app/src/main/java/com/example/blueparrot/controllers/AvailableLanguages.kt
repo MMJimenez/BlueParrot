@@ -2,9 +2,8 @@ package com.example.blueparrot.controllers
 
 import android.content.Context
 import android.content.SharedPreferences
-import android.provider.Settings.Global.getString
+import android.content.res.Resources
 import com.example.blueparrot.R
-import java.util.Locale
 
 class AvailableLanguages(var context: Context) {
     private fun getSharedPref(): SharedPreferences {
@@ -21,12 +20,12 @@ class AvailableLanguages(var context: Context) {
     }
 
     companion object {
-        fun defaultLocaleList(): ArrayList<String> {
+        fun defaultLanguagesList(resources: Resources): ArrayList<String> {
             return arrayListOf(
-                R.string.spanish.toString(),
-                R.string.english.toString(),
-                R.string.french.toString(),
-                R.string.german.toString()
+                resources.getString(R.string.spanish),
+                resources.getString(R.string.english),
+                resources.getString(R.string.french),
+                resources.getString(R.string.german)
             )
         }
     }
