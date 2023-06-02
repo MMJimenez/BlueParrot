@@ -195,7 +195,7 @@ class SpeechActivationService : Service(),
         private const val TAG = "SpeechActivationService"
         const val ACTIVATION_RESULT_INTENT_KEY = "ACTIVATION_RESULT_INTENT_KEY"
         const val ACTIVATION_RESULT_BROADCAST_NAME =
-            "com.asesoreslocales.rdpost.functions.ACTIVATION"
+            "com.example.blueparrot.ACTIVATION"
         const val ACTIVATION_STOP_INTENT_KEY = "ACTIVATION_STOP_INTENT_KEY"
         const val NOTIFICATION_ID = 10298
         const val UTTERANCE_ID = "End of speak"

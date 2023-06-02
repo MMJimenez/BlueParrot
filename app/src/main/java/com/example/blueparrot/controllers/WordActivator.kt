@@ -10,6 +10,7 @@ import android.util.Log
 import com.example.blueparrot.interfaces.SpeechActivationListener
 import com.example.blueparrot.interfaces.SpeechActivator
 import java.util.*
+import kotlin.math.log
 
 
 /**
@@ -32,11 +33,13 @@ class WordActivator(
     }
 
     private fun recognizeSpeechDirectly() {
+        Log.d(TAG, "recognizeSpeechDirectly: $languageToRecognizer")
         val recognizerIntent = Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH)
         recognizerIntent.putExtra(
             RecognizerIntent.EXTRA_LANGUAGE_MODEL,
             RecognizerIntent.LANGUAGE_MODEL_FREE_FORM
         )
+        recognizerIntent.putExtra(RecognizerIntent.EXTRA_LANGUAGE, languageToRecognizer)
         // accept partial results if they come
         recognizerIntent.putExtra(RecognizerIntent.EXTRA_PARTIAL_RESULTS, true)
         startRecognize(context, recognizerIntent, this, speechRecognizer)
@@ -135,6 +138,8 @@ class WordActivator(
 
     companion object {
         private const val TAG = "WordActivator"
+        var languageToRecognizer = "es-ES"
+        
         fun startRecognize(
             context: Context?,
             recognizerIntent: Intent, listener: RecognitionListener?,

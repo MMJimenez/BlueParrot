@@ -17,6 +17,7 @@ import androidx.core.content.PermissionChecker.checkCallingOrSelfPermission
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import com.example.blueparrot.controllers.AvailableLanguages
+import com.example.blueparrot.controllers.WordActivator
 import com.example.blueparrot.services.SpeechActivationService
 import com.google.android.gms.tasks.Task
 import com.google.mlkit.common.model.DownloadConditions
@@ -36,6 +37,8 @@ class TranslateFragment : Fragment(), TextToSpeech.OnInitListener {
     private lateinit var btnTranslate: Button
     private lateinit var btnRecognize: ImageButton
     private lateinit var btnConversation: ImageButton
+
+    private lateinit var btnSwitchLanguages: ImageButton
 
     private lateinit var edSourceLanguage: AutoCompleteTextView
     private lateinit var edTargetLanguage: AutoCompleteTextView
@@ -121,16 +124,20 @@ class TranslateFragment : Fragment(), TextToSpeech.OnInitListener {
         btnTranslate = view.findViewById(R.id.btn_translate)
         btnRecognize = view.findViewById(R.id.btn_recognize)
         btnConversation = view.findViewById(R.id.btn_conversation)
+        btnSwitchLanguages = view.findViewById(R.id.btn_switch_languages)
 
         btnTranslate.setOnClickListener {
+            setLocalesFromAutoComplete()
             translateText(edSource, edTarget)
         }
 
         btnRecognize.setOnClickListener {
+            setLocalesFromAutoComplete()
             startSpeechRecognition()
         }
 
         btnConversation.setOnClickListener {
+            setLocalesFromAutoComplete()
             if (!isConversationOn) {
                 btnConversation.setImageResource(R.drawable.ic_cancel_conversation_)
                 isConversationOn = true
@@ -142,6 +149,13 @@ class TranslateFragment : Fragment(), TextToSpeech.OnInitListener {
                 enableButtons()
             }
             Log.d(TAG, "Estado es: $isConversationOn")
+        }
+
+        btnSwitchLanguages.setOnClickListener {
+            switchLanguages()
+            edSourceLanguage.setText(localeToLanguageModel(sourceLocale)!!)
+            edTargetLanguage.setText(localeToLanguageModel(targetLocale)!!)
+
         }
 
         requestRecordAudioPermission()
@@ -162,6 +176,16 @@ class TranslateFragment : Fragment(), TextToSpeech.OnInitListener {
         edTargetLanguage = view.findViewById(R.id.ed_target_language)
         edTargetLanguage.setAdapter(adapterLanguage)
         edTargetLanguage.setText(languageList[1])
+
+        edSourceLanguage.setOnItemClickListener { parent, view, position, id ->
+            setLocalesFromAutoComplete()
+//            val iso = stringLanguageToLocale(edSourceLanguage.text.toString())!!.toLanguageTag()
+//            Toast.makeText(context, iso, Toast.LENGTH_SHORT).show()
+
+        }
+        edTargetLanguage.setOnItemClickListener { parent, view, position, id ->
+            setLocalesFromAutoComplete()
+        }
 
         return view
     }
@@ -248,7 +272,6 @@ class TranslateFragment : Fragment(), TextToSpeech.OnInitListener {
 //    }
 
     private fun translateText(sourceView: EditText, targetView: EditText, withTTS: Boolean = true) {
-        setLocalesFromAutoComplete()
 
         if (TextUtils.isEmpty(sourceView.text.toString())) {
             Toast.makeText(context, "Ed Origin cant be empty", Toast.LENGTH_SHORT).show()
@@ -327,8 +350,8 @@ class TranslateFragment : Fragment(), TextToSpeech.OnInitListener {
     }
 
     fun startSpeechRecognition() {
-        setLocalesFromAutoComplete()
         val i = SpeechActivationService.makeStartServiceIntent(context)
+        WordActivator.languageToRecognizer = sourceLocale.toLanguageTag()
         requireContext().startService(i)
     }
 }
